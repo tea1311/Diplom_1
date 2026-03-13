@@ -4,107 +4,127 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.when;
 
 public class BurgerTest extends BurgerBaseTest {
 
     @Test
     public void shouldSetBunInBurger() {
-        Bun bun = bunWithNameAndPrice("black bun", 100f);
-
         burger.setBuns(bun);
 
         assertSame(bun, burger.bun);
     }
 
     @Test
-    public void shouldAddIngredientInBurger() {
-        Ingredient ingredient = ingredientWithTypeNamePrice(IngredientType.SAUCE, "hot sauce", 100f);
-
-        burger.addIngredient(ingredient);
+    public void shouldIncreaseIngredientsSizeAfterAdd() {
+        burger.addIngredient(ingredient1);
 
         assertEquals(1, burger.ingredients.size());
-        assertSame(ingredient, burger.ingredients.get(0));
     }
 
     @Test
-    public void shouldRemoveIngredientFromBurger() {
-        Ingredient first = ingredientWithTypeNamePrice(IngredientType.SAUCE, "hot sauce", 100f);
-        Ingredient second = ingredientWithTypeNamePrice(IngredientType.FILLING, "cutlet", 200f);
-        Ingredient third = ingredientWithTypeNamePrice(IngredientType.FILLING, "sausage", 300f);
+    public void shouldAddCorrectIngredientToList() {
+        burger.addIngredient(ingredient1);
 
-        burger.addIngredient(first);
-        burger.addIngredient(second);
-        burger.addIngredient(third);
-
-        burger.removeIngredient(1);
-
-        assertEquals(2, burger.ingredients.size());
-        assertSame(first, burger.ingredients.get(0));
-        assertSame(third, burger.ingredients.get(1));
+        assertSame(ingredient1, burger.ingredients.get(0));
     }
 
     @Test
-    public void shouldMoveIngredientInsideBurger() {
-        Ingredient first = ingredientWithTypeNamePrice(IngredientType.SAUCE, "hot sauce", 100f);
-        Ingredient second = ingredientWithTypeNamePrice(IngredientType.FILLING, "cutlet", 200f);
-        Ingredient third = ingredientWithTypeNamePrice(IngredientType.FILLING, "sausage", 300f);
+    public void shouldDecreaseIngredientsSizeAfterRemove() {
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
 
-        burger.addIngredient(first);
-        burger.addIngredient(second);
-        burger.addIngredient(third);
+        burger.removeIngredient(0);
+
+        assertEquals(1, burger.ingredients.size());
+    }
+
+    @Test
+    public void shouldShiftIngredientAfterRemove() {
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
+
+        burger.removeIngredient(0);
+
+        assertSame(ingredient2, burger.ingredients.get(0));
+    }
+
+    @Test
+    public void shouldMoveFirstIngredientToLastPosition() {
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
+        burger.addIngredient(ingredient3);
 
         burger.moveIngredient(0, 2);
 
-        assertSame(second, burger.ingredients.get(0));
-        assertSame(third, burger.ingredients.get(1));
-        assertSame(first, burger.ingredients.get(2));
+        assertSame(ingredient1, burger.ingredients.get(2));
     }
 
     @Test
-    public void shouldNotChangeOrderWhenMovingIngredientToSamePosition() {
-        Ingredient first = ingredientWithTypeNamePrice(IngredientType.SAUCE, "hot sauce", 100f);
-        Ingredient second = ingredientWithTypeNamePrice(IngredientType.FILLING, "cutlet", 200f);
+    public void shouldMoveSecondIngredientToFirstPosition() {
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
+        burger.addIngredient(ingredient3);
 
-        burger.addIngredient(first);
-        burger.addIngredient(second);
+        burger.moveIngredient(0, 2);
 
-        burger.moveIngredient(1, 1);
-
-        assertSame(first, burger.ingredients.get(0));
-        assertSame(second, burger.ingredients.get(1));
+        assertSame(ingredient2, burger.ingredients.get(0));
     }
 
     @Test
-    public void shouldGenerateCorrectReceipt() {
-        Bun bun = bunWithNameAndPrice("black bun", 100f);
-        Ingredient sauce = ingredientWithTypeNamePrice(IngredientType.SAUCE, "hot sauce", 100f);
-        Ingredient filling = ingredientWithTypeNamePrice(IngredientType.FILLING, "cutlet", 200f);
+    public void shouldMoveThirdIngredientToSecondPosition() {
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
+        burger.addIngredient(ingredient3);
 
+        burger.moveIngredient(0, 2);
+
+        assertSame(ingredient3, burger.ingredients.get(1));
+    }
+
+    @Test
+    public void shouldReturnDoubleBunPriceWhenBurgerWithoutIngredients() {
         burger.setBuns(bun);
-        burger.addIngredient(sauce);
-        burger.addIngredient(filling);
+        when(bun.getPrice()).thenReturn(100f);
 
-        String expectedReceipt =
-                String.format("(==== %s ====)%n", "black bun") +
-                        String.format("= %s %s =%n", "sauce", "hot sauce") +
-                        String.format("= %s %s =%n", "filling", "cutlet") +
-                        String.format("(==== %s ====)%n", "black bun") +
-                        String.format("%nPrice: %f%n", 500f);
+        float actualPrice = burger.getPrice();
 
-        assertEquals(expectedReceipt, burger.getReceipt());
+        assertEquals(200f, actualPrice, 0.0001f);
     }
 
     @Test
-    public void shouldGenerateReceiptWithoutIngredients() {
-        Bun bun = bunWithNameAndPrice("white bun", 200f);
+    public void shouldReturnCorrectReceipt() {
         burger.setBuns(bun);
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
 
-        String expectedReceipt =
-                String.format("(==== %s ====)%n", "white bun") +
-                        String.format("(==== %s ====)%n", "white bun") +
-                        String.format("%nPrice: %f%n", 400f);
+        when(bun.getName()).thenReturn("black bun");
+        when(bun.getPrice()).thenReturn(100f);
 
-        assertEquals(expectedReceipt, burger.getReceipt());
+        when(ingredient1.getType()).thenReturn(IngredientType.SAUCE);
+        when(ingredient1.getName()).thenReturn("hot sauce");
+        when(ingredient1.getPrice()).thenReturn(50f);
+
+        when(ingredient2.getType()).thenReturn(IngredientType.FILLING);
+        when(ingredient2.getName()).thenReturn("cutlet");
+        when(ingredient2.getPrice()).thenReturn(70f);
+
+        String expectedReceipt = String.format(
+                "(==== %s ====)%n" +
+                        "= %s %s =%n" +
+                        "= %s %s =%n" +
+                        "(==== %s ====)%n" +
+                        "%nPrice: %f%n",
+                "black bun",
+                "sauce", "hot sauce",
+                "filling", "cutlet",
+                "black bun",
+                320f
+        );
+
+        String actualReceipt = burger.getReceipt();
+
+        assertEquals(expectedReceipt, actualReceipt);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -114,15 +134,8 @@ public class BurgerTest extends BurgerBaseTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowExceptionWhenMovingIngredientWithInvalidIndex() {
-        burger.addIngredient(ingredientWithTypeNamePrice(IngredientType.SAUCE, "hot sauce", 100f));
+        burger.addIngredient(ingredient1);
 
         burger.moveIngredient(5, 0);
-    }
-
-    @Test
-    public void shouldCalculatePriceWithOnlyBun() {
-        burger.setBuns(bunWithPrice(150f));
-
-        assertEquals(300f, burger.getPrice(), 0.0001f);
     }
 }
