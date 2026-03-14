@@ -15,18 +15,18 @@ import static org.mockito.Mockito.when;
 public class BurgerPriceTest extends BurgerBaseTest {
 
     private final float bunPrice;
-    private final float ingredientPrice1;
-    private final float ingredientPrice2;
+    private final float saucePrice;
+    private final float fillingPrice;
     private final float expectedPrice;
 
-    public BurgerPriceTest(float bunPrice, float ingredientPrice1, float ingredientPrice2, float expectedPrice) {
+    public BurgerPriceTest(float bunPrice, float saucePrice, float fillingPrice, float expectedPrice) {
         this.bunPrice = bunPrice;
-        this.ingredientPrice1 = ingredientPrice1;
-        this.ingredientPrice2 = ingredientPrice2;
+        this.saucePrice = saucePrice;
+        this.fillingPrice = fillingPrice;
         this.expectedPrice = expectedPrice;
     }
 
-    @Parameterized.Parameters(name = "bun={0}, ingredient1={1}, ingredient2={2}, expected={3}")
+    @Parameterized.Parameters(name = "bun={0}, sauce={1}, filling={2}, expected={3}")
     public static Collection<Object[]> getData() {
         return Arrays.asList(new Object[][]{
                 {100f, 50f, 60f, 310f},
@@ -38,13 +38,13 @@ public class BurgerPriceTest extends BurgerBaseTest {
     @Before
     public void prepareTestData() {
 
-        when(bun.getPrice()).thenReturn(bunPrice);
-        when(ingredient1.getPrice()).thenReturn(ingredientPrice1);
-        when(ingredient2.getPrice()).thenReturn(ingredientPrice2);
+        when(mockBun.getPrice()).thenReturn(bunPrice);
+        when(mockSauce.getPrice()).thenReturn(saucePrice);
+        when(mockFilling.getPrice()).thenReturn(fillingPrice);
 
-        burger.setBuns(bun);
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
     }
 
     @Test

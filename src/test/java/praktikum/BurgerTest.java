@@ -10,29 +10,29 @@ public class BurgerTest extends BurgerBaseTest {
 
     @Test
     public void shouldSetBunInBurger() {
-        burger.setBuns(bun);
+        burger.setBuns(mockBun);
 
-        assertSame(bun, burger.bun);
+        assertSame(mockBun, burger.bun);
     }
 
     @Test
     public void shouldIncreaseIngredientsSizeAfterAdd() {
-        burger.addIngredient(ingredient1);
+        burger.addIngredient(mockSauce);
 
         assertEquals(1, burger.ingredients.size());
     }
 
     @Test
     public void shouldAddCorrectIngredientToList() {
-        burger.addIngredient(ingredient1);
+        burger.addIngredient(mockSauce);
 
-        assertSame(ingredient1, burger.ingredients.get(0));
+        assertSame(mockSauce, burger.ingredients.get(0));
     }
 
     @Test
     public void shouldDecreaseIngredientsSizeAfterRemove() {
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         burger.removeIngredient(0);
 
@@ -41,51 +41,51 @@ public class BurgerTest extends BurgerBaseTest {
 
     @Test
     public void shouldShiftIngredientAfterRemove() {
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         burger.removeIngredient(0);
 
-        assertSame(ingredient2, burger.ingredients.get(0));
+        assertSame(mockFilling, burger.ingredients.get(0));
     }
 
     @Test
     public void shouldMoveFirstIngredientToLastPosition() {
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
-        burger.addIngredient(ingredient3);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
+        burger.addIngredient(mockExtraIngredient);
 
         burger.moveIngredient(0, 2);
 
-        assertSame(ingredient1, burger.ingredients.get(2));
+        assertSame(mockSauce, burger.ingredients.get(2));
     }
 
     @Test
     public void shouldMoveSecondIngredientToFirstPosition() {
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
-        burger.addIngredient(ingredient3);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
+        burger.addIngredient(mockExtraIngredient);
 
         burger.moveIngredient(0, 2);
 
-        assertSame(ingredient2, burger.ingredients.get(0));
+        assertSame(mockFilling, burger.ingredients.get(0));
     }
 
     @Test
     public void shouldMoveThirdIngredientToSecondPosition() {
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
-        burger.addIngredient(ingredient3);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
+        burger.addIngredient(mockExtraIngredient);
 
         burger.moveIngredient(0, 2);
 
-        assertSame(ingredient3, burger.ingredients.get(1));
+        assertSame(mockExtraIngredient, burger.ingredients.get(1));
     }
 
     @Test
     public void shouldReturnDoubleBunPriceWhenBurgerWithoutIngredients() {
-        burger.setBuns(bun);
-        when(bun.getPrice()).thenReturn(100f);
+        burger.setBuns(mockBun);
+        when(mockBun.getPrice()).thenReturn(100f);
 
         float actualPrice = burger.getPrice();
 
@@ -94,20 +94,20 @@ public class BurgerTest extends BurgerBaseTest {
 
     @Test
     public void shouldReturnCorrectReceipt() {
-        burger.setBuns(bun);
-        burger.addIngredient(ingredient1);
-        burger.addIngredient(ingredient2);
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
-        when(bun.getName()).thenReturn("black bun");
-        when(bun.getPrice()).thenReturn(100f);
+        when(mockBun.getName()).thenReturn("black bun");
+        when(mockBun.getPrice()).thenReturn(100f);
 
-        when(ingredient1.getType()).thenReturn(IngredientType.SAUCE);
-        when(ingredient1.getName()).thenReturn("hot sauce");
-        when(ingredient1.getPrice()).thenReturn(50f);
+        when(mockSauce.getType()).thenReturn(IngredientType.SAUCE);
+        when(mockSauce.getName()).thenReturn("hot sauce");
+        when(mockSauce.getPrice()).thenReturn(50f);
 
-        when(ingredient2.getType()).thenReturn(IngredientType.FILLING);
-        when(ingredient2.getName()).thenReturn("cutlet");
-        when(ingredient2.getPrice()).thenReturn(70f);
+        when(mockFilling.getType()).thenReturn(IngredientType.FILLING);
+        when(mockFilling.getName()).thenReturn("cutlet");
+        when(mockFilling.getPrice()).thenReturn(70f);
 
         String expectedReceipt = String.format(
                 "(==== %s ====)%n" +
@@ -134,7 +134,7 @@ public class BurgerTest extends BurgerBaseTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowExceptionWhenMovingIngredientWithInvalidIndex() {
-        burger.addIngredient(ingredient1);
+        burger.addIngredient(mockSauce);
 
         burger.moveIngredient(5, 0);
     }
